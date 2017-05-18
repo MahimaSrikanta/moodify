@@ -20,7 +20,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(session({secret: "ssshhh", resave: false, saveUninitialized: true}));
+app.use(session({secret: 'ssshhh', resave: false, saveUninitialized: true}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/../react-client/dist'));
 
@@ -45,12 +45,12 @@ app.get('/check', (req, res) => {
   } else {
     res.send({statusCode: 404});
   }
-})
+});
 
 app.get('/logout', (req, res) => {
-  req.session.destroy()
-  res.send('logged out!')
-})
+  req.session.destroy();
+  res.send('logged out!');
+});
 
 app.post('/search', (req, res) => {
   return mmHelpers.searchByTitleAndArtist(req.body.title, req.body.artist)
@@ -83,7 +83,7 @@ app.post('/process', (req, res) => {
     return;
   })
   .then(() => {
-    return watsonHelpers.queryWatsonToneHelper(input.lyrics)
+    return watsonHelpers.queryWatsonToneHelper(input.lyrics);
   })
   .then(data => {
     watsonData = {
@@ -105,23 +105,23 @@ app.post('/process', (req, res) => {
     const newEntry = new db.Watson(watsonData);
     newEntry.save(err => {
       if (err) { console.log('SAVE WATSON ERROR'); }
-    })
+    });
   })
   .then(() => {
     if (req.session.username) {
-      return db.User.where({username: req.session.username}).update({ $push: {songs: input.track_id}})
+      return db.User.where({username: req.session.username}).update({ $push: {songs: input.track_id}});
     }
   })
   .then(() => {
-    return spotifyHelpers.getSongByTitleAndArtist(input.track_name, input.artist_name)
+    return spotifyHelpers.getSongByTitleAndArtist(input.track_name, input.artist_name);
   })
   .then((spotifyData) => {
-    input.spotify_uri = spotifyData
+    input.spotify_uri = spotifyData;
 
     const songEntry = new db.Song(input);
     songEntry.save(err => {
-      if (err) { console.log("SAVE SONG ERROR"); }
-    })
+      if (err) { console.log('SAVE SONG ERROR'); }
+    });
   })
   .then(() => {
     res.json([songNameAndArtist, input.lyrics, watsonData, input.spotify_uri]);
@@ -130,7 +130,13 @@ app.post('/process', (req, res) => {
     console.log('/PROCESS ERROR: ', error);
     res.send(error);
   });
-})
+});
+
+app.get('/searchTweets', (req, res) => {
+  console.log('from /searchTweets Server');
+  res.send();
+
+});
 
 app.get('/pastSearches', (req, res) => {
   const username = req.session.username;
@@ -139,12 +145,12 @@ app.get('/pastSearches', (req, res) => {
       if (err) { reject(err); }
       const songs = user.songs;
       resolve(songs);
-    })
+    });
   })
   .then(songs => {
     if (songs.length === 0) { res.send({errorMessage: 'No Past Searches'}); }
     return new Promise ((resolve, reject) => {
-      songArray = []
+      songArray = [];
       songs.forEach((songId, index) => {
         db.Song.where({ track_id: songId }).findOne((err, songData) => {
           if (err) { reject(err); }
@@ -156,14 +162,14 @@ app.get('/pastSearches', (req, res) => {
           if (index === songs.length - 1) { resolve(songArray); }
         });
       });
-    })
+    });
   })
   .then((songArray) => {
     res.send(songArray);
   })
   .catch(err => {
     res.send({errorMessage: 'No Past Searches'});
-  })
+  });
 });
 
 app.post('/loadPastSearchResults', (req, res) => {
@@ -172,7 +178,7 @@ app.post('/loadPastSearchResults', (req, res) => {
     .find({ track_id: req.body.track_id })
     .exec((err, data) => {
       resolve(data[0]);
-    })
+    });
   })
   .then((songData) => {
     let output = [];
@@ -182,9 +188,9 @@ app.post('/loadPastSearchResults', (req, res) => {
     .exec((err, watsonData) => {
       output.push(watsonData[0]);
       res.send(output);
-    })
+    });
   })
-  .catch(err => { res.send(err); })
+  .catch(err => { res.send(err); });
 });
 
 module.exports = app;

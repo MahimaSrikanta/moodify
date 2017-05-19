@@ -34,12 +34,13 @@ class App extends React.Component {
       showResults: false,
       showResultsUser: false,
       showPrev: false,
+      showTweets: false,
       upDown: true,
       url: window.location.href,
       loggedIn: false,
       upDownUser: false,
       searchResultsLoadingUser: false,
-      showTweets: false,
+      tweets: []    
     };
     this.search = this.search.bind(this);
     this.process = this.process.bind(this);
@@ -107,7 +108,6 @@ class App extends React.Component {
   }
 
   searchTweets(trackAlbumArtist) {
-    console.log("from App Search Tweets")
     axios.get('/searchTweets', {
       params: {
         ArtistHashTag: trackAlbumArtist
@@ -117,8 +117,10 @@ class App extends React.Component {
       if (!res.data) {
         console.log('error');
       }
-      console.log(res.data.statuses);
-      this.setState({tweets: res.data.statuses});
+      this.state.tweets = res.data.statuses.map((tweet, index) => {
+        return ({content: tweet.text, time: 4});
+      });
+      console.log(res.data.statuses);     
     });
 
   }
@@ -183,13 +185,12 @@ class App extends React.Component {
               ? <Lyrics showPlayer={this.state.showPlayer} spotifyURI={this.state.spotifyURI} loading={this.state.spotifyLoading} lyrics={this.state.currentLyrics} loading={this.state.lyricsLoading} songNameAndArtist={this.state.currentSongNameAndArtist}/>
               : null
             }    
-          </div>
-          <div className="col1">
             {this.state.showTweets
-              ? <TweetResults loading={this.state.spotifyLoading} songNameAndArtist={this.state.currentSongNameAndArtist}/> 
+              ? <TweetResults loading={this.state.spotifyLoading} tweets={this.state.tweets}/> 
               : null
             }
           </div>
+
           <div className="col2">
             <User showPrev={this.state.showResultsUser} prev={this.showResultsUser} upDown={this.state.upDownUser} runUpDown={this.upDownUser} process={this.process} searchResultsLoading={this.state.searchResultsLoadingUser} loadPastSearchResults={this.loadPastSearchResults}/> {this.state.showMood
               ? <Mood watson={this.state.watson} songNameAndArtist={this.state.currentSongNameAndArtist}/>

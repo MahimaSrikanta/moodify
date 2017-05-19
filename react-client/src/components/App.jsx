@@ -43,6 +43,7 @@ class App extends React.Component {
     };
     this.search = this.search.bind(this);
     this.process = this.process.bind(this);
+    this.searchTweets = this.searchTweets.bind(this);
     this.showResults = this.showResults.bind(this);
     this.upDown = this.upDown.bind(this);
     this.upDownUser = this.upDownUser.bind(this);
@@ -99,10 +100,27 @@ class App extends React.Component {
         lyricsLoading: false,
         showLyrics: true,
         showMood: true
-      });
+      });     
     }).catch(error => {
       throw error;
+    });  
+  }
+
+  searchTweets(trackAlbumArtist) {
+    console.log("from App Search Tweets")
+    axios.get('/searchTweets', {
+      params: {
+        ArtistHashTag: trackAlbumArtist
+      }
+    })
+    .then((res) => {
+      if (!res.data) {
+        console.log('error');
+      }
+      console.log(res.data.statuses);
+      this.setState({tweets: res.data.statuses});
     });
+
   }
 
   showResults() {
@@ -158,7 +176,7 @@ class App extends React.Component {
           <div className="col1">
             <Search search={this.search} prev={this.showResults} showPrev={this.state.showPrev} upDown={this.state.upDown} runUpDown={this.upDown}/> 
             {this.state.showResults
-              ? <SearchResults results={this.state.searchResults} process={this.process} searchResultsLoading={this.state.searchResultsLoading}/>
+              ? <SearchResults results={this.state.searchResults} process={this.process} searchTweets={this.searchTweets} searchResultsLoading={this.state.searchResultsLoading}/>
               : null
             }
             {this.state.showPlayer

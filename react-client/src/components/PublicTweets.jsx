@@ -10,24 +10,6 @@ class PublicTweets extends React.Component {
     super(props);
     this.state = {
       allTweets: [],
-      tweetData: {
-        id: 'XXX',
-        user: {
-          name: 'XXX',
-          screen_name: 'XXX',
-          profile_image_url: 'XXX'
-        },
-        text: 'XXX',
-        created_at: 'XXX',
-        favorite_count: 'XXX',
-        retweet_count: 'XXX',
-        entities: {
-          urls: [],
-          user_mentions: [],
-          hashtags: [],
-          symbols: []
-        } 
-      }
     };
   } 
   componentDidMount() {
@@ -43,7 +25,6 @@ class PublicTweets extends React.Component {
 
   render() {
     console.log(this.props.tweets);
-    let formattedTweets = [];
     return (
       <div>
         <Header />

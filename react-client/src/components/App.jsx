@@ -12,6 +12,7 @@ import Header from './Header.jsx';
 import SearchResults from './SearchResults.jsx';
 import User from './User.jsx';
 import LoginSignup from './LoginSignup.jsx';
+import PublicTweets from './PublicTweets.jsx';
 import PastSearchResults from './PastSearchResults.jsx';
 import TweetResults from './TweetResults.jsx';
 
@@ -40,7 +41,8 @@ class App extends React.Component {
       loggedIn: false,
       upDownUser: false,
       searchResultsLoadingUser: false,
-      tweets: []    
+      tweets: [],
+      AllTweets: [],    
     };
     this.search = this.search.bind(this);
     this.process = this.process.bind(this);
@@ -120,7 +122,8 @@ class App extends React.Component {
       this.state.tweets = res.data.statuses.map((tweet, index) => {
         return ({content: tweet.text, time: 4});
       });
-      console.log(res.data.statuses);     
+      this.state.AllTweets = res.data;
+      //console.log(res.data.statuses);     
     });
 
   }
@@ -186,7 +189,7 @@ class App extends React.Component {
               : null
             }    
             {this.state.showTweets
-              ? <TweetResults loading={this.state.spotifyLoading} tweets={this.state.tweets}/> 
+              ? <TweetResults loading={this.state.spotifyLoading} tweets={this.state.tweets} allTweets={this.state.AllTweets}/> 
               : null
             }
           </div>
